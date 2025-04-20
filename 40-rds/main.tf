@@ -71,9 +71,9 @@ module "db" {
 
 
 
-resource "aws_route53_record" "endpoint_record" {
+resource "aws_route53_record" "www_dev" {
   zone_id = var.zone_id
-  name    = "mysql-${var.project}-${var.environment}"
+  name    = "mysql-${var.environment}.${var.domain_name}"
   type    = "CNAME"
   ttl     = 5
   records        = [module.db.db_instance_address]

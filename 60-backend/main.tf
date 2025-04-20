@@ -28,11 +28,16 @@ resource "null_resource" "backend" {
     password = "DevOps321"
   }
 
+  provisioner "file" {
+    source      = "backend.sh"
+    destination = "/tmp/backend.sh"
+  }
+
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
-      "bootstrap-cluster.sh ${join(" ",
-      aws_instance.cluster[*].private_ip)}",
+      "chmod +x /tmp/backend.sh",
+      "sudo sh /tmp/backend.sh ${var.environment}"
     ]
   }
 }

@@ -10,3 +10,29 @@ resource "aws_instance" "backend" {
         }
     )
 }
+
+
+
+resource "null_resource" "backend" {
+  # Changes to any instance of the instance requires re-provisioning
+  triggers = {
+   instance_id = aws_instance.backend.id
+  }
+
+  # Bootstrap script can run on any instance of the cluster
+  # So we just choose the first in this case
+  connection {
+    host = aws_instance.backend.private_ip
+    type = "ssh"
+    user     = "ec2-user"
+    password = "DevOps321"
+  }
+
+  provisioner "remote-exec" {
+    # Bootstrap script called with private_ip of each node in the cluster
+    inline = [
+      "bootstrap-cluster.sh ${join(" ",
+      aws_instance.cluster[*].private_ip)}",
+    ]
+  }
+}
